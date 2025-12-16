@@ -45,7 +45,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- Header -->
 <header class="bg-teal-400 text-white flex justify-between items-center px-6 py-4 text-lg">
   <div class="font-extrabold text-2xl">POSSE</div>
-  <button class="hover:underline">ログアウト</button>
+  <a href="./auth/signout.php" class="hover:underline">ログアウト</a>
 </header>
 
 <div class="flex">

@@ -116,7 +116,7 @@ for ($i = 0; $i < 3; $i++) {
   <!-- ヘッダー -->
   <header class="bg-teal-400 text-white flex justify-between items-center px-6 py-4 text-lg">
     <div class="font-extrabold text-2xl">POSSE</div>
-    <a href="#" class="hover:underline">ログアウト</a>
+    <a href="../auth/signout.php" class="hover:underline">ログアウト</a>
   </header>
 
   <div class="flex">
