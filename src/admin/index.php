@@ -1,5 +1,12 @@
 <?php
+session_start();
 require '../dbconnect.php';
+
+// ログインチェック
+if(!isset($_SESSION['user_id'])){
+  header('Location: ./auth/signin.php');
+  exit;
+}
 
 // ここから削除処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {

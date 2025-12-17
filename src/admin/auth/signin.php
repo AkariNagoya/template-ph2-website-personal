@@ -10,6 +10,12 @@ if (isset($_SESSION['user_id'])) {
 
 // ログイン処理
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
+  // バリデーション
+  if(empty($_POST['email']) || empty($_POST['password'])){
+    $error = 'メールアドレスとパスワードは必須項目です';
+  }elseif(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+    $error = 'メールアドレスの形式が正しくありません';
+  }else{
   $stmt = $dbh->prepare('SELECT * FROM users WHERE email = :email');
   $stmt->bindValue(':email', $_POST['email']);
   $stmt->execute();
@@ -26,8 +32,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }else{
       $error = 'パスワードが間違っています';
     }
-  }else{
-      $error = 'メールアドレスが見つかりません';
+    }else{
+        $error = 'メールアドレスが見つかりません';
+    }
   }
 }
 ?>

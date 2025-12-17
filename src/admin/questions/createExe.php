@@ -10,11 +10,56 @@ $supplement = $_POST['supplement'];
 
 // 画像アップロードのエラーハンドリング追加
 $image_name = '';
-if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $image_name = uniqid(mt_rand(), true) . '.' . substr(strrchr($_FILES['image']['name'], '.'), 1);
-    $image_path = dirname(__FILE__) . '/../../assets/img/quiz/' . $image_name;
-    move_uploaded_file($_FILES['image']['tmp_name'], $image_path);
+$upload_error = '';
+if(!empty($_FILES['image']['name'])){
+
+  // アップロードバリデーション
+  if($_FILES['image']['error'] !== UPLOAD_ERR_OK){
+    $upload_error = '画像のアップロードに失敗しました';
+  }
+  // ファイルサイズバリデーション
+  elseif($_FILES['image']['size'] > 5 * 1024 * 1024){
+    $upload_error = '画像サイズは5MB以内にしてください';
+  }
+  // 拡張子バリデーション
+  else{
+    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+    $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
+    if (!in_array($ext, $allow_ext, true)) {
+    $upload_error = '画像形式は jpg / jpeg / png / gif のみ対応しています';
+    }
+
+  // 本当に画像かどうか
+    else{
+      $image_info = getimagesize($_FILES['image']['tmp_name']);
+      if ($image_info === false) {
+        $upload_error = 'アップロードされたファイルは画像ではありません';
+      }
+
+      // すべて通過
+      else{
+        $image_name = uniqid(mt_rand(), true) . '.' . $ext;
+        $image_path = dirname(__FILE__) . '/../../assets/img/quiz/' . $image_name;
+        move_uploaded_file($_FILES['image']['tmp_name'], $image_path);
+      }
+    }
+  }
 }
+
+// エラーがあった場合は処理を中断
+if ($upload_error) {
+  echo '<div style="color: red; padding: 20px; border: 2px solid red; margin: 20px;">';
+  echo 'エラー: ' . htmlspecialchars($upload_error, ENT_QUOTES, 'UTF-8');
+  echo '<br><a href="javascript:history.back()">戻る</a>';
+  echo '</div>';
+  exit;
+}
+
+// if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+//     $image_name = uniqid(mt_rand(), true) . '.' . substr(strrchr($_FILES['image']['name'], '.'), 1);
+//     $image_path = dirname(__FILE__) . '/../../assets/img/quiz/' . $image_name;
+//     move_uploaded_file($_FILES['image']['tmp_name'], $image_path);
+// }
 
 // bindValueを使った修正版
 $sql = "INSERT INTO questions (content, image, supplement) VALUES (:content, :image, :supplement)";

@@ -1,8 +1,20 @@
 <?php
 require_once('../../dbconnect.php');
 
+// ログインチェック
+if(!isset($_SESSION['user_id'])){
+  header('Location: ../auth/signin.php');
+  exit;
+}
+
+
+
 // ここから更新処理↓
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if(empty($_POST['content'])){
+    $upload_error = '問題文を入力してください';
+  }
+
   try {
     // トランザクション開始
     $dbh->beginTransaction();
@@ -152,7 +164,7 @@ for ($i = 0; $i < 3; $i++) {
       <!-- 問題文 -->
       <div class="mb-6">
         <label class="block mb-1">問題文:</label>
-        <input type="text" name="content" class="w-full border border-gray-300 rounded p-2" placeholder="問題文を入力してください" value="<?= htmlspecialchars($question['content'], ENT_QUOTES, 'UTF-8') ?>">
+        <input type="text" name="content" class="w-full border border-gray-300 rounded p-2" placeholder="問題文を入力してください" value="<?= htmlspecialchars($question['content'], ENT_QUOTES, 'UTF-8') ?>" required>
       </div>
 
       <!-- 選択肢 -->
@@ -161,7 +173,7 @@ for ($i = 0; $i < 3; $i++) {
         <div class="flex space-x-4">
           <?php for($i = 0; $i < count($choices); $i++):?>
           <input type="hidden" name="choice_id<?= $i + 1 ?>" value="<?= $choices[$i]['id'] ?>">
-          <input type="text" name="choice<?= $i + 1 ?>" class="flex-1 border border-gray-300 rounded p-2" placeholder="選択肢<?= $i + 1 ?>を入力してください" value="<?= $choices[$i]['name'] !== '' ? htmlspecialchars($choices[$i]['name'], ENT_QUOTES, 'UTF-8') : '未設定' ?>">
+          <input type="text" name="choice<?= $i + 1 ?>" class="flex-1 border border-gray-300 rounded p-2" placeholder="選択肢<?= $i + 1 ?>を入力してください" value="<?= $choices[$i]['name'] !== '' ? htmlspecialchars($choices[$i]['name'], ENT_QUOTES, 'UTF-8') : '未設定' ?>" required>
           <?php endfor; ?>
           <!-- <input type="hidden" name="choice_id1" value="<?= $choices[0]['id'] ?>">
           <input type="text" name="choice1" class="flex-1 border border-gray-300 rounded p-2" placeholder="選択肢1を入力してください" value="<?= htmlspecialchars($choices[0]['name'], ENT_QUOTES, 'UTF-8') ?>">
@@ -182,15 +194,15 @@ for ($i = 0; $i < 3; $i++) {
         <label class="block mb-1">正解の選択肢</label>
         <div class="flex items-center space-x-6">
           <label class="flex items-center space-x-2">
-            <input type="radio" name="valid" value="1" class="w-4 h-4" <?= $choices[0]['valid'] == 1 ? 'checked' : '' ?>>
+            <input type="radio" name="valid" value="1" class="w-4 h-4" <?= $choices[0]['valid'] == 1 ? 'checked' : '' ?> required>
             <span>選択肢1</span>
           </label>
           <label class="flex items-center space-x-2">
-            <input type="radio" name="valid" value="2" class="w-4 h-4" <?= $choices[1]['valid'] == 1 ? 'checked' : '' ?>>
+            <input type="radio" name="valid" value="2" class="w-4 h-4" <?= $choices[1]['valid'] == 1 ? 'checked' : '' ?> required>
             <span>選択肢2</span>
           </label>
           <label class="flex items-center space-x-2">
-            <input type="radio" name="valid" value="3" class="w-4 h-4" <?= $choices[2]['valid'] == 1 ? 'checked' : '' ?>>
+            <input type="radio" name="valid" value="3" class="w-4 h-4" <?= $choices[2]['valid'] == 1 ? 'checked' : '' ?> required>
             <span>選択肢3</span>
           </label>
         </div>

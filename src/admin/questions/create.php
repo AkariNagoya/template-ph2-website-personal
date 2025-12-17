@@ -42,16 +42,16 @@
       <!-- 問題文 -->
       <div>
         <label class="block mb-1 font-medium">問題文:</label>
-        <input type="text" placeholder="問題文を入力してください" class="w-full border rounded-md p-2" name="content"/>
+        <input type="text" placeholder="問題文を入力してください" class="w-full border rounded-md p-2" name="content" required/>
       </div>
 
       <!-- 選択肢 -->
       <div>
         <label class="block mb-1 font-medium">選択肢:</label>
         <div class="flex gap-2">
-          <input type="text" placeholder="選択肢1を入力してください" class="w-1/3 border rounded-md p-2" name="choice1"/>
-          <input type="text" placeholder="選択肢2を入力してください" class="w-1/3 border rounded-md p-2" name="choice2"/>
-          <input type="text" placeholder="選択肢3を入力してください" class="w-1/3 border rounded-md p-2" name="choice3"/>
+          <input type="text" placeholder="選択肢1を入力してください" class="w-1/3 border rounded-md p-2" name="choice1" required/>
+          <input type="text" placeholder="選択肢2を入力してください" class="w-1/3 border rounded-md p-2" name="choice2" required/>
+          <input type="text" placeholder="選択肢3を入力してください" class="w-1/3 border rounded-md p-2" name="choice3" required/>
         </div>
       </div>
 
@@ -60,15 +60,15 @@
         <label class="block mb-2 font-medium">正解の選択肢</label>
         <div class="flex items-center gap-6">
           <label class="flex items-center gap-1">
-            <input type="radio" name="valid" checked value="1"/>
+            <input type="radio" name="valid" checked value="1" required/>
             <span>選択肢1</span>
           </label>
           <label class="flex items-center gap-1">
-            <input type="radio" name="valid" value="2"/>
+            <input type="radio" name="valid" value="2" required/>
             <span>選択肢2</span>
           </label>
           <label class="flex items-center gap-1">
-            <input type="radio" name="valid" value="3"/>
+            <input type="radio" name="valid" value="3" required/>
             <span>選択肢3</span>
           </label>
         </div>
@@ -77,7 +77,7 @@
       <!-- 画像 -->
       <div>
         <label class="block mb-1 font-medium">問題の画像</label>
-        <input type="file" class="border rounded-md p-2 w-full bg-white" name="image"/>
+        <input type="file" class="border rounded-md p-2 w-full bg-white" name="image" required/>
       </div>
 
       <!-- 補足 -->
