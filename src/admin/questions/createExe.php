@@ -1,59 +1,90 @@
 <?php
 require "../../dbconnect.php";
+require "../../vendor/autoload.php";
+use Verot\Upload\Upload;
 $content = $_POST['content'];
-$choice1 = $_POST['choice1'];
-$choice2 = $_POST['choice2'];
-$choice3 = $_POST['choice3'];
-$choices = [$choice1, $choice2, $choice3];
+$choices = [$_POST['choice1'], $_POST['choice2'], $_POST['choice3']];
 $valid = $_POST['valid'];
 $supplement = $_POST['supplement'];
 
-// 画像アップロードのエラーハンドリング追加
-$image_name = '';
-$upload_error = '';
-if(!empty($_FILES['image']['name'])){
+try{
+  $file = $_FILES['image'];
+  $lang = 'ja_JP';
 
-  // アップロードバリデーション
-  if($_FILES['image']['error'] !== UPLOAD_ERR_OK){
-    $upload_error = '画像のアップロードに失敗しました';
-  }
-  // ファイルサイズバリデーション
-  elseif($_FILES['image']['size'] > 5 * 1024 * 1024){
-    $upload_error = '画像サイズは5MB以内にしてください';
-  }
-  // 拡張子バリデーション
-  else{
-    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-    $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
-    if (!in_array($ext, $allow_ext, true)) {
-    $upload_error = '画像形式は jpg / jpeg / png / gif のみ対応しています';
-    }
+// アップロードされたファイルを渡す
+$handle = new Upload($file, $lang);
 
-  // 本当に画像かどうか
-    else{
-      $image_info = getimagesize($_FILES['image']['tmp_name']);
-      if ($image_info === false) {
-        $upload_error = 'アップロードされたファイルは画像ではありません';
-      }
-
-      // すべて通過
-      else{
-        $image_name = uniqid(mt_rand(), true) . '.' . $ext;
-        $image_path = dirname(__FILE__) . '/../../assets/img/quiz/' . $image_name;
-        move_uploaded_file($_FILES['image']['tmp_name'], $image_path);
-      }
-    }
+if ($handle->uploaded) {
+  $handle->file_max_size = 5 * 1024 * 1024; // 5MB
+  $handle->allowed = ['image/jpeg', 'image/png', 'image/gif'];
+  $handle->image_convert = 'png'; // すべての画像をPNGに変換する例
+  $handle->image_resize = true;
+  $handle->image_x = 718; // 幅を718pxにリサイズ
+  $handle->image_ratio_y = true;
+  
+  // アップロードディレクトリを指定して保存
+  $handle->process('../../assets/img/quiz/');
+  if ($handle->processed) {
+    // アップロード成功
+    $image_name = $handle->file_dst_name;
+    $handle->clean();
+  } else {
+    // アップロード処理失敗
+    throw new Exception($handle->error);
   }
+} else {
+  // アップロード失敗
+  throw new Exception($handle->error);
 }
+
+}catch (Exception $e) {
+  
+    echo '<div style="color: red; padding: 20px; border: 2px solid red; margin: 20px;">';
+    echo '画像アップロードエラー: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+    echo '<br><a href="javascript:history.back()">戻る</a>';
+    echo '</div>';
+    exit;
+}
+
+// 画像アップロードのエラーハンドリング追加
+// $image_name = '';
+// $upload_error = '';
+// if(!empty($_FILES['image']['name'])){
+
+//   // アップロードバリデーション
+//   if($_FILES['image']['error'] !== UPLOAD_ERR_OK){
+//     $upload_error = '画像のアップロードに失敗しました';
+//   }
+//   // ファイルサイズバリデーション
+//   elseif($_FILES['image']['size'] > 5 * 1024 * 1024){
+//     $upload_error = '画像サイズは5MB以内にしてください';
+//   }
+//   // 拡張子バリデーション
+//   else{
+//     $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+//     $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
+//     if (!in_array($ext, $allow_ext, true)) {
+//     $upload_error = '画像形式は jpg / jpeg / png / gif のみ対応しています';
+//     }
+
+//   // 本当に画像かどうか
+//     else{
+//       $image_info = getimagesize($_FILES['image']['tmp_name']);
+//       if ($image_info === false) {
+//         $upload_error = 'アップロードされたファイルは画像ではありません';
+//       }
+
+//       // すべて通過
+//       // else{
+//       //   $image_name = uniqid(mt_rand(), true) . '.' . $ext;
+//       //   $image_path = dirname(__FILE__) . '/../../assets/img/quiz/' . $image_name;
+//       //   move_uploaded_file($_FILES['image']['tmp_name'], $image_path);
+//       // }
+//     }
+//   }
+// }
 
 // エラーがあった場合は処理を中断
-if ($upload_error) {
-  echo '<div style="color: red; padding: 20px; border: 2px solid red; margin: 20px;">';
-  echo 'エラー: ' . htmlspecialchars($upload_error, ENT_QUOTES, 'UTF-8');
-  echo '<br><a href="javascript:history.back()">戻る</a>';
-  echo '</div>';
-  exit;
-}
 
 // if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 //     $image_name = uniqid(mt_rand(), true) . '.' . substr(strrchr($_FILES['image']['name'], '.'), 1);

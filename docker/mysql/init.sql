@@ -63,3 +63,4 @@ CREATE TABLE users(
 );
 INSERT INTO users (id, name, email, password) VALUES 
 (1,'posse', 'posse@example.com', 'password');
+-- ↑のハッシュ化したパスワード・・・$2y$10$vaGnHHrA650xqPVftD4NieMsfhiwCWqh79YQqs/d3DN1or/KLfr3O
